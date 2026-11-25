@@ -1,0 +1,27 @@
+# 取得する Roboflow Universe データセットの一覧
+# 書式: <workspace>/<project>[@<version>]   （version 省略時は最新版）
+# '#' 以降はコメント。
+detection-a6lof/queen-bee
+abullrahman-dawshi/queenbee-detector
+bees-xh9di/bees-detection-model
+nectar/bees-ytrmp-o8kmc
+# --- 2026-11-18 追加（Universe 検索 API で見つけたもの。すべて CC BY 4.0）
+beehelpers-workspace/bee-queen-scaner
+sbl2022/queen-local
+vincents-workspace-zlfac/queen-bee-detection-mjyh0
+corbyns-workspace/bee-eflhy
+alis-workspace-ckgzp/queen-vokz2
+workspace1-wtvn6/queen-bee-wdsb3
+roberto-saif-al-abarb-sciamanna/queen-worker
+fateme228498gmailcom/bee-x0xxu
+machine-learning-and-ai-umw0l/bee-detection-omvbs
+red-hawk-pcduc/bee-detector-f3ivv
+queen-bee-detection-by-arpan/queen-vw0wv
+apicultura/reina
+# 除外: -jfqot/queen-gj4wj  … アリの女王（蜂ではない）
+queen-detection/queen-detector
+vn-thun-bgeuz/honeybee-focus-on-queen
+queen-bee-g6nee/finding-queen-bee
+# 除外: barbs-development-center/reina-f3n6n  … 白い模型・チェスの駒（蜂ではない）
+rocket-ts144/queen-bee-c9kzm
+# 除外: muhammad-yazid-r1ex2/queen-xdmeu  … チェスのクイーン（蜂ではない）

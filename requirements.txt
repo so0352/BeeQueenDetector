@@ -1,0 +1,6 @@
+# 注意: roboflow パッケージは opencv-python-headless を引き込み cv2.imshow が壊れるため入れない。
+ultralytics>=8.3
+opencv-python
+requests
+pyyaml
+pillow
