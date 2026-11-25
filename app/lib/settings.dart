@@ -3,15 +3,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// 端末に保存する設定（アプリを閉じても残る）。
 class AppSettings {
   AppSettings({
-    this.conf = 0.25,
-    this.window = 10,
-    this.minHits = 4,
-    this.cooldownSec = 10,
-    this.autoSave = true,
-    this.vibrate = true,
+    this.conf = 0.15,
+    this.window = 20,
+    this.minHits = 1,
+    this.cooldownSec = 9,
+    this.autoSave = false,
+    this.vibrate = false,
   });
 
-  /// 確信度のしきい値。PC のテストで 0.25: 検出 92%・誤検出 2%/画像。
+  /// 確信度のしきい値。低めにして見逃しを減らす（誤検出は「発見」の判定と目視で見分ける）。
   double conf;
 
   /// 判定に使う直近フレーム数。

@@ -12,6 +12,7 @@
 | ファイル | 役割 |
 |---|---|
 | `index.html` / `style.css` | 画面 |
+| `help.html` | 使う人向けの使い方ページ（最初の画面と設定からリンク） |
 | `app.js` | カメラ・推論ループ・枠の描画・通知・記録・設定 |
 | `detector.js` | 前処理（letterbox）・後処理（NMS）・「発見」の判定。ブラウザに依存しない |
 | `store.js` | 記録した画像の保存（端末内の IndexedDB） |
@@ -58,6 +59,8 @@ uv pip install --python .venv-onnx/bin/python ultralytics onnx onnxslim onnxrunt
 ```
 
 ## 使う人への案内（iPhone）
+
+サイト内の「使い方」ページ（`help.html`）に、使う人向けの説明をまとめています。要点:
 
 1. Safari で URL を開く → 「カメラで開始」→ カメラを許可。
 2. 共有ボタン →「ホーム画面に追加」すると、アプリのように全画面で使える。

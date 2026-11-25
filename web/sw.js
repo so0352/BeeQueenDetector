@@ -1,13 +1,14 @@
 // オフライン対応（巣箱の前の圏外でも起動できるように、ページ・ONNX Runtime・モデルを端末に保存する）。
 //
 // モデルや ONNX Runtime を差し替えたときは VERSION を上げる（古い保存分が消え、読み込み直される）。
-const VERSION = 'v2';
+const VERSION = 'v3';
 const CACHE = `bqd-${VERSION}`;
 
 // 小さいファイルは最初に保存しておく。大きいもの（モデル・wasm）はページが読み込んだときに保存する
 const SHELL = [
   './',
   './index.html',
+  './help.html',
   './style.css',
   './app.js',
   './detector.js',

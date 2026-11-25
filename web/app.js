@@ -9,13 +9,13 @@ const MAX_DIGITAL_ZOOM = 4;
 
 // ---------------------------------------------------------------- 設定（端末に保存）
 const DEFAULTS = {
-  conf: 0.25, // 確信度のしきい値。PC のテストで 0.25: 検出 92%・誤検出 2%/画像
-  window: 10, // 判定に使う直近フレーム数
-  minHits: 4, // 「発見」とみなす検出フレーム数
-  cooldownSec: 10, // 自動保存の間隔
-  autoSave: true,
+  conf: 0.15, // 確信度のしきい値。低めにして見逃しを減らす（誤検出は「発見」の判定と目視で見分ける）
+  window: 20, // 判定に使う直近フレーム数
+  minHits: 1, // 「発見」とみなす検出フレーム数
+  cooldownSec: 9, // 自動保存の間隔
+  autoSave: false,
   sound: true,
-  vibrate: true,
+  vibrate: false,
   maxFps: 0, // 推論の上限（0 = 上限なし）。発熱・電池を抑えたいときに下げる
   backend: 'auto', // auto / webgpu / wasm
 };
@@ -529,15 +529,18 @@ document.addEventListener('visibilitychange', async () => {
   drawOverlay();
   keepAwake();
   // iPhone はバックグラウンドでカメラが止まることがあるので取り直す
-  if (stream && (!track || track.readyState === 'ended')) {
-    try {
-      await startCamera();
-      await setZoom(1);
-    } catch (e) {
-      toast(`カメラを再開できませんでした: ${e.message}`);
-    }
-  }
+  restartCameraIfEnded();
 });
+
+async function restartCameraIfEnded() {
+  if (!stream || (track && track.readyState !== 'ended')) return;
+  try {
+    await startCamera();
+    await setZoom(1);
+  } catch (e) {
+    toast(`カメラを再開できませんでした: ${e.message}`);
+  }
+}
 
 // ---------------------------------------------------------------- 設定画面
 const SETTING_FIELDS = [
@@ -695,6 +698,7 @@ async function init() {
   }
   setupSettings();
   setupPinch();
+  $('stage').addEventListener('click', () => running && restartCameraIfEnded()); // 止まったカメラはタップで再開
   new ResizeObserver(resizeOverlay).observe(overlay);
   updateRecordCount();
 
