@@ -1,8 +1,8 @@
 """環境確認: torch / CUDA・MPS / OpenCV GUI(cv2.imshow) / ultralytics の動作確認。
 
 使い方:
-    python check_env.py            # 全チェック（imshow はウィンドウを 2 秒表示）
-    python check_env.py --no-gui   # GUI チェックを省略
+    python scripts/check_env.py            # 全チェック（imshow はウィンドウを 2 秒表示）
+    python scripts/check_env.py --no-gui   # GUI チェックを省略
 """
 import argparse
 import os

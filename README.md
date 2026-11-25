@@ -12,20 +12,21 @@
 
 | ファイル | 役割 |
 |---|---|
-| `check_env.py` | torch / CUDA・MPS / `cv2.imshow` の動作確認 |
-| `datasets.txt` | 取得する Roboflow Universe データセットの一覧 |
-| `download_datasets.py` | Roboflow REST API でデータ取得 → `data/raw/<name>/` |
-| `merge_datasets.py` | 1 クラス `queen` に統合・重複除去 → `data/merged/` |
-| `train.py` | YOLO の学習 → `runs/queen/<name>/weights/best.pt` |
 | `start.sh` / `start_windows.bat` | スマホを自動で探して検出を起動（ワンコマンド / Windows でダブルクリック） |
-| `detect_stream.py` | リアルタイム検出アプリ本体 |
-| `tools/find_phone.py` | LAN 上のスマホ配信アプリ（8080 / 4747）を自動検索 |
-| `collect_frames.py` | スマホ映像から追加注釈用のフレームを保存 |
-| `eval_images.py` | しきい値ごとの「検出できた割合 / 誤検出の割合」（画像単位） |
-| `eval_videos.py` | 複数モデルを動画で比較（検出率・誤検出の目安・確認用画像） |
-| `stream_utils.py` | 映像入力・ブラウザ配信などの共通部品 |
-| `tools/fake_camera.py` | 動画をスマホ配信アプリと同じ MJPEG で流す（スマホなしで動作確認） |
-| `export_mobile.py` | スマホアプリ用にモデルを書き出す（Android: TFLite / iPhone: CoreML / Web 版: ONNX） |
+| `scripts/detect_stream.py` | リアルタイム検出アプリ本体 |
+| `scripts/stream_utils.py` | 映像入力・ブラウザ配信などの共通部品 |
+| `scripts/check_env.py` | torch / CUDA・MPS / `cv2.imshow` の動作確認 |
+| `scripts/datasets.txt` | 取得する Roboflow Universe データセットの一覧 |
+| `scripts/download_datasets.py` | Roboflow REST API でデータ取得 → `data/raw/<name>/` |
+| `scripts/merge_datasets.py` | 1 クラス `queen` に統合・重複除去 → `data/merged/` |
+| `scripts/train.py` | YOLO の学習 → `runs/queen/<name>/weights/best.pt` |
+| `scripts/eval_images.py` | しきい値ごとの「検出できた割合 / 誤検出の割合」（画像単位） |
+| `scripts/eval_videos.py` | 複数モデルを動画で比較（検出率・誤検出の目安・確認用画像） |
+| `scripts/collect_frames.py` | スマホ映像から追加注釈用のフレームを保存 |
+| `scripts/export_mobile.py` | スマホアプリ用にモデルを書き出す（Android: TFLite / iPhone: CoreML / Web 版: ONNX） |
+| `scripts/tools/find_phone.py` | LAN 上のスマホ配信アプリ（8080 / 4747）を自動検索 |
+| `scripts/tools/fake_camera.py` | 動画をスマホ配信アプリと同じ MJPEG で流す（スマホなしで動作確認） |
+| `models/queen.pt` | 採用モデル |
 | `app/` | スマホ単体アプリ（Flutter、Android / iPhone）。詳しくは `app/README.md` |
 | `web/` | Web 版（ブラウザで動き、開いた端末の GPU で推論）。詳しくは `web/README.md` |
 | `CREDITS.md` | 使用データの出典・ライセンス（自動生成） |
@@ -38,7 +39,7 @@ cd ~/work/BeeQueenDetector
 uv venv .venv --python 3.12          # または python3 -m venv .venv
 source .venv/bin/activate
 uv pip install -r requirements.txt   # または pip install -r requirements.txt
-python check_env.py
+python scripts/check_env.py
 ```
 
 - 使うデバイスは自動で選びます（NVIDIA GPU → `0`、Apple Silicon の Mac → `mps`、それ以外 → `cpu`）。
@@ -59,38 +60,38 @@ python check_env.py
 
 ```bash
 echo "ROBOFLOW_API_KEY=xxxxxxxx" > .env && chmod 600 .env   # または export ROBOFLOW_API_KEY=...
-python download_datasets.py --list-only   # バージョン・ライセンス・クラスを確認
-python download_datasets.py               # data/raw/ に YOLOv8 形式で展開
-python merge_datasets.py                  # data/merged/ と data.yaml を作成、枚数を集計表示
+python scripts/download_datasets.py --list-only   # バージョン・ライセンス・クラスを確認
+python scripts/download_datasets.py               # data/raw/ に YOLOv8 形式で展開
+python scripts/merge_datasets.py                  # data/merged/ と data.yaml を作成、枚数を集計表示
 ```
 
-- `datasets.txt` には Roboflow Universe の女王蜂データ 23 件（すべて CC BY 4.0）を登録済み。出典は `CREDITS.md`。
+- `scripts/datasets.txt` には Roboflow Universe の女王蜂データ 23 件（すべて CC BY 4.0）を登録済み。出典は `CREDITS.md`。
   追加したいときは Universe の URL の `<workspace>/<project>` を 1 行書き足して再実行します。
   **追加したら必ず画像を目で確認してください。** クラス名が `queen` でも、アリの女王やチェスの駒のデータが
-  実際にありました（`datasets.txt` で除外済み）。
+  実際にありました（`scripts/datasets.txt` で除外済み）。
 - 女王蜂のクラス（`queen` / `Bee_Queen` / `reina` など。`non-queen` や王台 `queen cell` は除外）を `queen` に統一し、
   他のクラス（働き蜂など）は捨てます。女王蜂のいない画像は背景（負例）として残します（train は正例数と同数まで）。
 - 回転・反転に強い知覚ハッシュで重複画像を検出し、評価の水増しと train / val・test 間のリークを防ぎます（GPU で計算）。
 - 評価（val/test）は「スマホで巣板を撮った実映像」に近いデータだけで行います。切り抜き・接写中心・固定カメラの
-  データは学習専用（`merge_datasets.py` の `DEFAULT_TRAIN_ONLY`）。
+  データは学習専用（`scripts/merge_datasets.py` の `DEFAULT_TRAIN_ONLY`）。
 - 自前で注釈したデータは `data/custom/<名前>/`（`train/images`, `train/labels`, `data.yaml` の YOLO 形式）に置けば一緒に統合されます。
 
 ## 3. 学習
 
 ```bash
 # 現在の models/queen.pt を作ったときの設定（RTX 4070 SUPER で約 1.5 時間。Mac の mps ではかなり遅い）
-python train.py --name v3_nc_y11s --model yolo11s.pt --epochs 50 --patience 15 --batch 16 --cache none --workers 10
+python scripts/train.py --name v3_nc_y11s --model yolo11s.pt --epochs 50 --patience 15 --batch 16 --cache none --workers 10
 cp runs/queen/v3_nc_y11s/weights/best.pt models/queen.pt
 
 # 評価
-python eval_images.py --models models/queen.pt                 # しきい値ごとの検出率・誤検出率
-python eval_videos.py --models models/queen.pt --videos data/test_videos/*.webm
+python scripts/eval_images.py --models models/queen.pt                 # しきい値ごとの検出率・誤検出率
+python scripts/eval_videos.py --models models/queen.pt --videos data/test_videos/*.webm
 ```
 
 - 結果: `runs/queen/<name>/weights/best.pt`、指標は `summary.json`、検証画像への推論結果は `val_preds/`。
 - **学習は 1 本ずつ**。2 本同時に回すと（RTX 4070 SUPER の場合）VRAM 12GB を超えて Windows の共有メモリにあふれ、極端に遅くなります。
 - 公開データは自分の巣箱とは条件が違うため、mAP の数字よりも**実際の巣板映像での見逃し・誤検出**を重視してください。
-- 採用したモデルは `models/queen.pt` に置くと `detect_stream.py` の既定になります。
+- 採用したモデルは `models/queen.pt` に置くと `scripts/detect_stream.py` の既定になります。
 
 ### これまでの比較結果（2026-11-18）
 
@@ -129,7 +130,7 @@ YOLO26s は mAP では僅差で上だが、画像単位の検出率と動画で 
 ```bash
 ~/work/BeeQueenDetector/start.sh                 # スマホを LAN から自動で探して起動
 ~/work/BeeQueenDetector/start.sh 192.168.0.23    # IP を指定（アプリの種類は自動判定）
-~/work/BeeQueenDetector/start.sh --tiles 2       # detect_stream.py のオプションもそのまま渡せる
+~/work/BeeQueenDetector/start.sh --tiles 2       # scripts/detect_stream.py のオプションもそのまま渡せる
 ```
 
 - Windows からは `start_windows.bat` をダブルクリック（デスクトップにコピーして使えます。
@@ -144,10 +145,10 @@ YOLO26s は mAP では僅差で上だが、画像単位の検出率と動画で 
 
 ```bash
 source .venv/bin/activate
-python detect_stream.py --source hive.mp4                       # 動画ファイルで確認
-python detect_stream.py --app ipwebcam --source 192.168.1.23    # Android（IP Webcam）
-python detect_stream.py --app droidcam --source 192.168.1.23    # DroidCam
-python detect_stream.py --app droidcam --source 192.168.1.23 --web 8090   # ブラウザ表示
+python scripts/detect_stream.py --source hive.mp4                       # 動画ファイルで確認
+python scripts/detect_stream.py --app ipwebcam --source 192.168.1.23    # Android（IP Webcam）
+python scripts/detect_stream.py --app droidcam --source 192.168.1.23    # DroidCam
+python scripts/detect_stream.py --app droidcam --source 192.168.1.23 --web 8090   # ブラウザ表示
 ```
 
 - 直近 `--window` フレーム（既定 10）のうち `--min-hits` フレーム（既定 4）以上で検出されると「女王蜂発見！」を表示し、
@@ -155,8 +156,8 @@ python detect_stream.py --app droidcam --source 192.168.1.23 --web 8090   # ブ�
 - キー: `s` 手動保存、`q` / `Esc` 終了。
 - 既定のしきい値は `--conf 0.25`。誤検出が多いときは上げる（例 0.5）、見逃すときは下げる（例 0.15）。
 - 巣板全体を遠目に映して女王蜂が小さいときは `--tiles 2`（画面を 2×2 の重なりタイルにも分けて推論。少し重くなる）。
-- スマホなしで試すとき: `python tools/fake_camera.py data/test_videos/queen_bee.webm --port 8080` を別端末で動かし、
-  `python detect_stream.py --source http://localhost:8080/video`。
+- スマホなしで試すとき: `python scripts/tools/fake_camera.py data/test_videos/queen_bee.webm --port 8080` を別端末で動かし、
+  `python scripts/detect_stream.py --source http://localhost:8080/video`。
 
 ### つながらないとき
 
@@ -176,14 +177,14 @@ python detect_stream.py --app droidcam --source 192.168.1.23 --web 8090   # ブ�
 
 ```bash
 # 2 秒おきに（ブレた画像・似た画像は除外して）保存。スペースキーで手動保存
-python collect_frames.py --app ipwebcam --source 192.168.1.23 --interval 2
+python scripts/collect_frames.py --app ipwebcam --source 192.168.1.23 --interval 2
 # 学習済みモデルが「迷っている」フレームだけを集める（注釈の効率が良い）
-python collect_frames.py --source hive.mp4 --model models/queen.pt --uncertain
+python scripts/collect_frames.py --source hive.mp4 --model models/queen.pt --uncertain
 ```
 
 1. `data/collected/<日時>/` の画像を Roboflow（Web）や CVAT で注釈（クラス名 `queen`、女王蜂がいない画像もそのまま残す）。
 2. YOLOv8 形式で書き出して `data/custom/<名前>/` に展開。
-3. `python merge_datasets.py && python train.py` で再学習。
+3. `python scripts/merge_datasets.py && python scripts/train.py` で再学習。
 
 ## 6. スマホ単体アプリ（`app/`）
 
@@ -191,8 +192,8 @@ PC なし・圏外でも、スマホの中だけで女王蜂を検出するア�
 ビルド・インストール・モデル更新の手順は **`app/README.md`** を参照してください。
 
 ```bash
-.venv-export/bin/python export_mobile.py --formats tflite   # Android 用モデル（LiteRT w8a32, 約 10 MB）
-.venv-coreml/bin/python export_mobile.py --formats coreml   # iPhone 用モデル（CoreML FP16, 約 18 MB）
+.venv-export/bin/python scripts/export_mobile.py --formats tflite   # Android 用モデル（LiteRT w8a32, 約 10 MB）
+.venv-coreml/bin/python scripts/export_mobile.py --formats coreml   # iPhone 用モデル（CoreML FP16, 約 18 MB）
 cd app && flutter build apk --release --target-platform android-arm64
 ```
 
@@ -205,7 +206,7 @@ cd app && flutter build apk --release --target-platform android-arm64
 iPhone にも App Store なしで配れます（GitHub Pages で公開）。手順・確認結果は **`web/README.md`** を参照してください。
 
 ```bash
-.venv-onnx/bin/python export_mobile.py --formats onnx   # Web 版用モデル（ONNX FP32, 約 38 MB）→ web/models/
+.venv-onnx/bin/python scripts/export_mobile.py --formats onnx   # Web 版用モデル（ONNX FP32, 約 38 MB）→ web/models/
 cd web && python3 -m http.server 8765                   # http://localhost:8765/ で確認
 ```
 

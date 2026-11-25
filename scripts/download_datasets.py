@@ -9,9 +9,9 @@ API（Roboflow Platform API, https://api.roboflow.com）:
 
 使い方:
   export ROBOFLOW_API_KEY=xxxxx
-  python download_datasets.py                 # datasets.txt の全件
-  python download_datasets.py --list-only     # バージョン・ライセンス等の情報表示のみ
-  python download_datasets.py nectar/bees-ytrmp-o8kmc@2
+  python scripts/download_datasets.py                 # datasets.txt の全件
+  python scripts/download_datasets.py --list-only     # バージョン・ライセンス等の情報表示のみ
+  python scripts/download_datasets.py nectar/bees-ytrmp-o8kmc@2
 """
 import argparse
 import io
@@ -26,7 +26,7 @@ from pathlib import Path
 import requests
 
 API = "https://api.roboflow.com"
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 RAW = ROOT / "data" / "raw"
 
 
@@ -129,7 +129,7 @@ def main():
     load_dotenv()
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("specs", nargs="*", help="workspace/project[@version]（省略時は datasets.txt）")
-    ap.add_argument("--list", default=str(ROOT / "datasets.txt"))
+    ap.add_argument("--list", default=str(Path(__file__).resolve().parent / "datasets.txt"))
     ap.add_argument("--format", default="yolov8")
     ap.add_argument("--list-only", action="store_true", help="情報表示のみでダウンロードしない")
     ap.add_argument("--force", action="store_true", help="既に取得済みでも再取得")

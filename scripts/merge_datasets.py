@@ -18,8 +18,8 @@
   - 女王蜂のいない画像は背景（負例）として残す（train は --neg-ratio で上限）。
 
 使い方:
-  python merge_datasets.py
-  python merge_datasets.py --exclude --out data/merged_all   # 除外なしで全データ
+  python scripts/merge_datasets.py
+  python scripts/merge_datasets.py --exclude --out data/merged_all   # 除外なしで全データ
 """
 import argparse
 import json
@@ -34,7 +34,7 @@ import numpy as np
 import yaml
 from PIL import Image
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 IMG_EXT = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 SPLIT_ALIASES = {"train": "train", "valid": "val", "val": "val", "validation": "val", "test": "test"}
 # 既定で使わないデータセット。queenbee-detector（強調した切り抜き画像）は入れると test の mAP50 が

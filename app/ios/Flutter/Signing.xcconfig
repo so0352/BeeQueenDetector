@@ -1,0 +1,8 @@
+// iOS の署名設定の既定値（リポジトリに含める）。
+// 自分の Apple Developer の Team ID と Bundle ID は、同じフォルダの Signing.local.xcconfig
+// （Git 管理外）に書いてください。例:
+//   DEVELOPMENT_TEAM = ABCDE12345
+//   APP_BUNDLE_ID = com.yourname.findbeequeen
+APP_BUNDLE_ID = com.example.findbeequeen
+DEVELOPMENT_TEAM =
+#include? "Signing.local.xcconfig"

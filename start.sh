@@ -6,7 +6,7 @@
 # 使い方:
 #   ./start.sh                     # 自動検索
 #   ./start.sh 192.168.0.23        # IP を指定（アプリの種類は自動判定）
-#   ./start.sh --tiles 2           # detect_stream.py のオプションはそのまま渡せる
+#   ./start.sh --tiles 2           # scripts/detect_stream.py のオプションはそのまま渡せる
 #   WEB_PORT=0 ./start.sh          # ブラウザ配信を無効化（既定は http://localhost:8090/）
 set -u
 cd "$(dirname "$(readlink -f "$0")")"
@@ -26,9 +26,9 @@ WEB_PORT=${WEB_PORT:-8090}
 
 while true; do
     if [ -n "$ip_arg" ]; then
-        found=$($PY tools/find_phone.py --ip "$ip_arg")
+        found=$($PY scripts/tools/find_phone.py --ip "$ip_arg")
     else
-        found=$($PY tools/find_phone.py)
+        found=$($PY scripts/tools/find_phone.py)
     fi
     [ -n "$found" ] && break
     echo "[起動] スマホが見つかりません。同じ Wi-Fi でアプリの配信を開始してください（5 秒後に再検索、Ctrl+C で終了）" >&2
@@ -42,4 +42,4 @@ if [ "$WEB_PORT" != "0" ]; then
     web_opt=(--web "$WEB_PORT")
     echo "[起動] ブラウザでも見られます: http://localhost:$WEB_PORT/"
 fi
-exec $PY detect_stream.py --app "$app" --source "$ip" "${web_opt[@]}" "$@"
+exec $PY scripts/detect_stream.py --app "$app" --source "$ip" "${web_opt[@]}" "$@"

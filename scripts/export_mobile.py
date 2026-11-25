@@ -7,20 +7,20 @@
   .venv-onnx   : Web 版の ONNX 用（uv pip install ultralytics onnx onnxslim onnxruntime）
 
 使い方:
-  .venv-export/bin/python export_mobile.py --formats tflite   # Android 用 → mobile_models/ と app/assets/models/
-  .venv-coreml/bin/python export_mobile.py --formats coreml   # iPhone 用
-  .venv-onnx/bin/python export_mobile.py --formats onnx        # Web 版用 → mobile_models/ と web/models/
-  .venv-export/bin/python export_mobile.py --formats tflite --tflite-quantize fp32 --app-assets ""   # 精度比較用
+  .venv-export/bin/python scripts/export_mobile.py --formats tflite   # Android 用 → mobile_models/ と app/assets/models/
+  .venv-coreml/bin/python scripts/export_mobile.py --formats coreml   # iPhone 用
+  .venv-onnx/bin/python scripts/export_mobile.py --formats onnx        # Web 版用 → mobile_models/ と web/models/
+  .venv-export/bin/python scripts/export_mobile.py --formats tflite --tflite-quantize fp32 --app-assets ""   # 精度比較用
 
 精度の確認（書き出したモデルを PC で評価。tflite は PC でも動く。CoreML は macOS のみ）:
-  .venv-export/bin/python eval_images.py --models models/queen.pt mobile_models/queen.tflite
+  .venv-export/bin/python scripts/eval_images.py --models models/queen.pt mobile_models/queen.tflite
 """
 import argparse
 import shutil
 import zipfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 
 
 def export_tflite(model_path, out_dir, imgsz, quantize):

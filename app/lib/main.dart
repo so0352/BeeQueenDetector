@@ -10,7 +10,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'queen_judge.dart';
 import 'settings.dart';
 
-/// 端末ごとのモデル（export_mobile.py で書き出し、pubspec.yaml で端末ごとに同梱）。
+/// 端末ごとのモデル（scripts/export_mobile.py で書き出し、pubspec.yaml で端末ごとに同梱）。
 String get modelPath =>
     Platform.isIOS ? 'assets/models/queen.mlpackage.zip' : 'assets/models/queen.tflite';
 

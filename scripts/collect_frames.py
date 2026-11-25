@@ -1,10 +1,10 @@
 """スマホ映像などからフレームを保存する（追加注釈用）。
 
 使い方:
-  python collect_frames.py --app ipwebcam --source 192.168.1.23 --interval 2
-  python collect_frames.py --source hive.mp4 --interval 1 --no-show
+  python scripts/collect_frames.py --app ipwebcam --source 192.168.1.23 --interval 2
+  python scripts/collect_frames.py --source hive.mp4 --interval 1 --no-show
   # 学習済みモデルで「自信のないフレーム」を優先的に集める（注釈の効率化）
-  python collect_frames.py --source hive.mp4 --model runs/queen/yolo11s_960/weights/best.pt --uncertain
+  python scripts/collect_frames.py --source hive.mp4 --model runs/queen/yolo11s_960/weights/best.pt --uncertain
 
 キー操作: スペース / s = 今のフレームを保存、p = 自動保存の一時停止/再開、q / Esc = 終了
 保存先: data/collected/<日時>/ （Roboflow / CVAT などで注釈して data/custom/ に YOLO 形式で置く）
@@ -18,7 +18,7 @@ import numpy as np
 
 from stream_utils import PRESETS, FrameSource, TextDrawer, resolve_source
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 
 
 def sharpness(img):

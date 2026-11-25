@@ -3,12 +3,12 @@
 スマホのカメラ映像（MJPEG/HTTP）・PC のカメラ・動画ファイルを入力に、女王蜂を枠で示す。
 
 使い方の例:
-  python detect_stream.py --source sample.mp4                       # 動画ファイル
-  python detect_stream.py --app ipwebcam --source 192.168.1.23      # Android「IP Webcam」
-  python detect_stream.py --app droidcam --source 192.168.1.23      # DroidCam（Android / iPhone）
-  python detect_stream.py --source http://192.168.1.23:8080/video   # URL を直接指定
-  python detect_stream.py --source 0                                # PC のカメラ
-  python detect_stream.py --source ... --web 8090                   # ブラウザ表示（http://localhost:8090/）
+  python scripts/detect_stream.py --source sample.mp4                       # 動画ファイル
+  python scripts/detect_stream.py --app ipwebcam --source 192.168.1.23      # Android「IP Webcam」
+  python scripts/detect_stream.py --app droidcam --source 192.168.1.23      # DroidCam（Android / iPhone）
+  python scripts/detect_stream.py --source http://192.168.1.23:8080/video   # URL を直接指定
+  python scripts/detect_stream.py --source 0                                # PC のカメラ
+  python scripts/detect_stream.py --source ... --web 8090                   # ブラウザ表示（http://localhost:8090/）
 
 キー操作（ウィンドウ表示時）: s = 手動スナップショット、q / Esc = 終了
 """
@@ -21,7 +21,7 @@ import cv2
 
 from stream_utils import PRESETS, FrameSource, MJPEGServer, TextDrawer, default_device, resolve_source, use_half
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 
 
 def default_model():

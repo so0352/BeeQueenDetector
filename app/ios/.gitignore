@@ -32,3 +32,6 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
+
+# 個人の署名設定（Team ID・Bundle ID）
+Flutter/Signing.local.xcconfig

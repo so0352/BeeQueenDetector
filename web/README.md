@@ -18,7 +18,7 @@
 | `store.js` | 記録した画像の保存（端末内の IndexedDB） |
 | `sw.js` | オフライン対応。CPU 推論を複数スレッドにするためのヘッダーも付ける |
 | `manifest.webmanifest` / `icons/` | ホーム画面に追加したときの名前・アイコン |
-| `models/queen.onnx` | 女王蜂モデル（`export_mobile.py --formats onnx` で書き出し） |
+| `models/queen.onnx` | 女王蜂モデル（`scripts/export_mobile.py --formats onnx` で書き出し） |
 | `vendor/ort/` | ONNX Runtime Web 1.31.1（WebGPU 版）。更新方法は `vendor/ort/README.md` |
 
 ## 手元で動かす
@@ -48,7 +48,7 @@ cd web && python3 -m http.server 8765
 （ページ・JS・CSS は通信できるときは自動で新しいものになります）。
 
 ```bash
-.venv-onnx/bin/python export_mobile.py --formats onnx   # → web/models/queen.onnx
+.venv-onnx/bin/python scripts/export_mobile.py --formats onnx   # → web/models/queen.onnx
 ```
 
 書き出し用の環境（本体の `.venv` とは分ける。`cv2.imshow` を壊さないため）:

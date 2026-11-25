@@ -3,8 +3,8 @@
 スマホなしで detect_stream.py の URL 入力・再接続などを確認できる。
 
 使い方:
-  python tools/fake_camera.py data/test_videos/queen_bee.webm --port 8080
-  python detect_stream.py --source http://localhost:8080/video
+  python scripts/tools/fake_camera.py data/test_videos/queen_bee.webm --port 8080
+  python scripts/detect_stream.py --source http://localhost:8080/video
 """
 import argparse
 import sys

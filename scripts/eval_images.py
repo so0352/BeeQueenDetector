@@ -4,8 +4,8 @@
 しきい値ごとに表示する（女王蜂を見つけたいアプリでは mAP よりこちらが実用的な目安）。
 
 使い方:
-  python eval_images.py --models models/queen.pt
-  python eval_images.py --models runs/queen/*/weights/best.pt --split val --conf 0.15 0.25 0.35 0.5
+  python scripts/eval_images.py --models models/queen.pt
+  python scripts/eval_images.py --models runs/queen/*/weights/best.pt --split val --conf 0.15 0.25 0.35 0.5
 """
 import argparse
 from pathlib import Path
@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import yaml
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 
 
 def main():

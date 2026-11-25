@@ -4,8 +4,8 @@
 .phone に記録し、次回はまずそこを確認するので速い。
 
 使い方:
-  python tools/find_phone.py                 # 自動検索
-  python tools/find_phone.py --ip 192.168.0.23   # この IP でどちらのアプリかだけ判定
+  python scripts/tools/find_phone.py                 # 自動検索
+  python scripts/tools/find_phone.py --ip 192.168.0.23   # この IP でどちらのアプリかだけ判定
 """
 import argparse
 import ipaddress
@@ -17,7 +17,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]  # リポジトリのルート
 CACHE = ROOT / ".phone"
 PORTS = {"ipwebcam": 8080, "droidcam": 4747}
 

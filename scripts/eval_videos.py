@@ -5,8 +5,8 @@
 各動画から等間隔に 8 フレームを選び、検出結果を並べた画像も保存する（目視確認用）。
 
 使い方:
-  python eval_videos.py --models runs/queen/*/weights/best.pt --videos data/test_videos/*.webm
-  python eval_videos.py --models models/queen.pt --videos my_hive.mp4 --imgsz 960 --tiles 2
+  python scripts/eval_videos.py --models runs/queen/*/weights/best.pt --videos data/test_videos/*.webm
+  python scripts/eval_videos.py --models models/queen.pt --videos my_hive.mp4 --imgsz 960 --tiles 2
 """
 import argparse
 import json
@@ -19,7 +19,7 @@ import numpy as np
 from detect_stream import draw, predict
 from stream_utils import TextDrawer, default_device, use_half
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 
 
 def model_label(p):

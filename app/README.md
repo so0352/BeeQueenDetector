@@ -62,8 +62,13 @@ iPhone 向けのビルドは Apple の決まりで macOS + Xcode でしかでき
    flutter pub get
    open ios/Runner.xcworkspace
    ```
-   Xcode で Runner → Signing & Capabilities → Team に自分の Apple ID を設定し、
-   Bundle Identifier を自分だけの名前（例 `com.<自分の名前>.findbeequeen`）に変更。
+   署名設定は `ios/Flutter/Signing.local.xcconfig`（Git 管理外）に書きます:
+   ```
+   DEVELOPMENT_TEAM = <Team ID>            // Xcode → Settings → Accounts で確認できる 10 桁の ID
+   APP_BUNDLE_ID = com.<自分の名前>.findbeequeen
+   ```
+   （Xcode の Signing & Capabilities で Team を選ぶと `project.pbxproj` に Team ID が書き込まれて
+   リポジトリに入ってしまうので、Xcode では変更しないでください。）
 5. ```bash
    flutter run --release
    ```
@@ -78,11 +83,10 @@ Apple Developer Program（年 99 ドル）への登録が必要です。受け�
 招待リンクを開くだけでインストールできます（ケーブルや Mac は不要、最大 1 万人、1 ビルドは 90 日有効）。
 
 1. **登録**: https://developer.apple.com/programs/ で Apple Developer Program に登録する（承認まで 1〜2 日）。
-2. **Xcode の署名**: `open ios/Runner.xcworkspace` → Runner → Signing & Capabilities で
-   Team を **有料の方のチーム** にする（Bundle ID `com.example.findbeequeen` のままで OK）。
+2. **署名**: `ios/Flutter/Signing.local.xcconfig` の `DEVELOPMENT_TEAM` を **有料の方のチーム** の Team ID にする。
 3. **App Store Connect にアプリを作る**: https://appstoreconnect.apple.com → アプリ → ＋ → 新規 App
    - プラットフォーム iOS、名前「女王蜂さがし」（使われていたら「女王蜂さがし - ○○」など）、
-     言語 日本語、バンドル ID `com.example.findbeequeen`、SKU は任意（例 `findbeequeen`）。
+     言語 日本語、バンドル ID は `Signing.local.xcconfig` の `APP_BUNDLE_ID`、SKU は任意（例 `findbeequeen`）。
 4. **ビルドしてアップロード**（Mac で）:
    ```bash
    cd app
@@ -115,9 +119,9 @@ Apple Developer Program（年 99 ドル）への登録が必要です。受け�
 
 ```bash
 cd ~/work/BeeQueenDetector
-.venv-export/bin/python export_mobile.py --formats tflite   # Android 用（LiteRT, w8a32）→ app/assets/models/
-.venv-coreml/bin/python export_mobile.py --formats coreml   # iPhone 用（CoreML, FP16）→ app/assets/models/
-.venv-export/bin/python eval_images.py --models models/queen.pt mobile_models/queen.tflite   # 書き出し後の精度確認
+.venv-export/bin/python scripts/export_mobile.py --formats tflite   # Android 用（LiteRT, w8a32）→ app/assets/models/
+.venv-coreml/bin/python scripts/export_mobile.py --formats coreml   # iPhone 用（CoreML, FP16）→ app/assets/models/
+.venv-export/bin/python scripts/eval_images.py --models models/queen.pt mobile_models/queen.tflite   # 書き出し後の精度確認
 ```
 
 - 書き出し用の環境は本体の `.venv` と分けています（書き出しツールが `opencv-python-headless` を入れて

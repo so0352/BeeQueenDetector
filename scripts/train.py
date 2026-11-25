@@ -1,9 +1,9 @@
 """女王蜂検出モデル（1クラス queen）を Ultralytics YOLO で学習する。
 
 使い方:
-  python train.py                                   # yolo11s.pt, imgsz=640
-  python train.py --model yolo26s.pt --name y26s    # 別モデルで比較
-  python train.py --epochs 3 --name smoke           # 動作確認用の短い学習
+  python scripts/train.py                                   # yolo11s.pt, imgsz=640
+  python scripts/train.py --model yolo26s.pt --name y26s    # 別モデルで比較
+  python scripts/train.py --epochs 3 --name smoke           # 動作確認用の短い学習
 
 学習後:
   - runs/queen/<name>/weights/best.pt が最良モデル
@@ -18,7 +18,7 @@ from ultralytics import YOLO
 
 from stream_utils import default_device, use_half
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent  # リポジトリのルート
 
 
 def main():
