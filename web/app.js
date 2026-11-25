@@ -185,6 +185,8 @@ async function startCamera() {
   const caps = track.getCapabilities?.() || {};
   hwZoom = caps.zoom && caps.zoom.max > caps.zoom.min ? { min: caps.zoom.min, max: caps.zoom.max } : null;
   $('torchBtn').hidden = !caps.torch;
+  torchOn = false; // 新しいカメラではライトは消えている
+  $('torchBtn').classList.remove('on');
   track.addEventListener('ended', () => running && toast('カメラが止まりました。画面をタップして再開してください'));
 }
 
@@ -535,25 +537,51 @@ async function keepAwake() {
   }
 }
 
+// 画面から離れたらカメラと音を止める（Android ではバックグラウンドでもカメラが動き続け、電池と発熱の元になる）
+let cameraPaused = false;
 document.addEventListener('visibilitychange', async () => {
-  if (document.hidden || !running) return;
+  if (!running) return;
+  if (document.hidden) {
+    audioCtx?.suspend?.();
+    if (stream) {
+      stopStream();
+      cameraPaused = true;
+    } else {
+      video.pause(); // 動画ファイルの再生も止める
+    }
+    return;
+  }
   // アプリから戻ったときに発見状態を引きずらない
   judge.reset();
   latest = { boxes: [] };
   drawOverlay();
   keepAwake();
-  // iPhone はバックグラウンドでカメラが止まることがあるので取り直す
-  restartCameraIfEnded();
+  audioCtx?.resume?.();
+  if (!cameraPaused && !stream && video.src) video.play().catch(() => {});
+  else restartCameraIfEnded();
 });
 
-async function restartCameraIfEnded() {
-  if (!stream || (track && track.readyState !== 'ended')) return;
+async function resumeCamera() {
   try {
     await startCamera();
-    await setZoom(1);
+    if (document.hidden || !running) {
+      // 取り直している間にまた画面を離れた（または最初の画面に戻った）
+      stopStream();
+      cameraPaused = running;
+      return;
+    }
+    await setZoom(zoom);
   } catch (e) {
-    toast(`カメラを再開できませんでした: ${e.message}`);
+    cameraPaused = true; // 画面をタップすればもう一度試す
+    toast(`カメラを再開できませんでした（タップで再試行）: ${e.message}`);
   }
+}
+
+/** 自分で止めたカメラ、または iPhone がバックグラウンドで止めたカメラを取り直す。 */
+async function restartCameraIfEnded() {
+  if (cameraPaused) cameraPaused = false;
+  else if (!stream || (track && track.readyState !== 'ended')) return;
+  await resumeCamera();
 }
 
 // ---------------------------------------------------------------- 設定画面
@@ -682,6 +710,8 @@ function backToStart() {
   $('main').hidden = true;
   $('start').hidden = false;
   wakeLock?.release?.();
+  cameraPaused = false;
+  audioCtx?.suspend?.(); // 開始ボタンを押したときにまた resume する
 }
 
 async function init() {
