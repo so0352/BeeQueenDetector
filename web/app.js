@@ -19,12 +19,26 @@ const DEFAULTS = {
   maxFps: 0, // 推論の上限（0 = 上限なし）。発熱・電池を抑えたいときに下げる
   backend: 'auto', // auto / webgpu / wasm
 };
-const settings = { ...DEFAULTS, ...JSON.parse(localStorage.getItem('bqd-settings') || '{}') };
-const saveSettings = () => localStorage.setItem('bqd-settings', JSON.stringify(settings));
+// 端末には「初期値から変えた項目」だけを保存する（初期値を変えたとき、触っていない項目は新しい初期値になるように）
+const SETTINGS_KEY = 'bqd-settings-v2';
+// 以前（全項目を保存していた頃）の初期値。それと同じ値は「変えていない」とみなして捨てる
+const OLD_DEFAULTS = { conf: 0.25, window: 10, minHits: 4, cooldownSec: 10, autoSave: true, sound: true, vibrate: true, maxFps: 0, backend: 'auto' };
+function loadSettings() {
+  const saved = localStorage.getItem(SETTINGS_KEY);
+  if (saved) return JSON.parse(saved);
+  const old = JSON.parse(localStorage.getItem('bqd-settings') || '{}');
+  localStorage.removeItem('bqd-settings');
+  return Object.fromEntries(Object.entries(old).filter(([k, v]) => k in DEFAULTS && v !== OLD_DEFAULTS[k]));
+}
+const settings = { ...DEFAULTS, ...loadSettings() };
+if (settings.minHits > settings.window) settings.minHits = settings.window;
+const saveSettings = () =>
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(Object.fromEntries(Object.entries(settings).filter(([k, v]) => v !== DEFAULTS[k]))));
+saveSettings();
 
 // ---------------------------------------------------------------- 画面の部品
 const $ = (id) => document.getElementById(id);
-const video = $('video');
+let video = $('video'); // 最初の画面へ戻るたびに作り直す（iPhone で 2 回目の映像が小さく表示されるのを防ぐ）
 const overlay = $('overlay');
 const octx = overlay.getContext('2d');
 const prep = document.createElement('canvas');
@@ -655,8 +669,14 @@ function backToStart() {
   loopGen++;
   stopStream();
   video.pause();
+  if (video.src.startsWith('blob:')) URL.revokeObjectURL(video.src);
   video.removeAttribute('src');
   video.srcObject = null;
+  const fresh = video.cloneNode(false);
+  fresh.style.transform = '';
+  video.replaceWith(fresh);
+  video = fresh;
+  zoom = digitalZoom = 1;
   latest = { boxes: [] };
   $('settings').close();
   $('main').hidden = true;

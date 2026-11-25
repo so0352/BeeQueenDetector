@@ -19,6 +19,8 @@ html, body {
   -webkit-tap-highlight-color: transparent;
 }
 
+[hidden] { display: none !important; } /* #start の display: flex などより優先して隠す */
+
 button { font: inherit; color: inherit; cursor: pointer; }
 
 /* ---------------------------------------------------------------- 最初の画面 */
@@ -55,7 +57,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .error { color: #ff8a80; }
 
 /* ---------------------------------------------------------------- 検出画面 */
-#main { position: fixed; inset: 0; }
+#main { position: fixed; inset: 0; background: #000; }
 #stage { position: absolute; inset: 0; overflow: hidden; touch-action: none; }
 #video, #overlay { position: absolute; inset: 0; width: 100%; height: 100%; }
 #video { object-fit: cover; transform-origin: center; }
