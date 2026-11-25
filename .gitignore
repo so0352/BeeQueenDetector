@@ -8,6 +8,7 @@
 .venv/
 .venv-export/
 .venv-coreml/
+.venv-onnx/
 __pycache__/
 *.pyc
 

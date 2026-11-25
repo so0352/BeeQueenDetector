@@ -25,8 +25,9 @@
 | `eval_videos.py` | 複数モデルを動画で比較（検出率・誤検出の目安・確認用画像） |
 | `stream_utils.py` | 映像入力・ブラウザ配信などの共通部品 |
 | `tools/fake_camera.py` | 動画をスマホ配信アプリと同じ MJPEG で流す（スマホなしで動作確認） |
-| `export_mobile.py` | スマホアプリ用にモデルを書き出す（Android: TFLite / iPhone: CoreML） |
+| `export_mobile.py` | スマホアプリ用にモデルを書き出す（Android: TFLite / iPhone: CoreML / Web 版: ONNX） |
 | `app/` | スマホ単体アプリ（Flutter、Android / iPhone）。詳しくは `app/README.md` |
+| `web/` | Web 版（ブラウザで動き、開いた端末の GPU で推論）。詳しくは `web/README.md` |
 | `CREDITS.md` | 使用データの出典・ライセンス（自動生成） |
 
 ## 1. 環境構築
@@ -196,3 +197,16 @@ cd app && flutter build apk --release --target-platform android-arm64
 
 - 書き出し後の精度（test 880 枚、conf 0.25）: `.pt` 検出 91.7% / 誤検出 1.9% → `.tflite` 91.3% / 1.9%（ほぼ同じ）。
 - iPhone 版のビルドには Mac（Xcode）が必要です。
+
+## 7. Web 版（`web/`）
+
+ブラウザで URL を開くだけで使える版です。**推論はページを開いた端末の GPU（WebGPU）で行い**、映像はどこにも送りません。
+iPhone にも App Store なしで配れます（GitHub Pages で公開）。手順・確認結果は **`web/README.md`** を参照してください。
+
+```bash
+.venv-onnx/bin/python export_mobile.py --formats onnx   # Web 版用モデル（ONNX FP32, 約 38 MB）→ web/models/
+cd web && python3 -m http.server 8765                   # http://localhost:8765/ で確認
+```
+
+- 書き出し後の精度（test 880 枚、conf 0.25）: `.onnx` 検出 91.7% / 誤検出 1.9%（`.pt` と同じ）。
+- Apple Silicon の Mac の Chrome（WebGPU）で 1 回約 20 ms。iPhone での速度は実機で要確認。

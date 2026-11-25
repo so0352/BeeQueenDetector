@@ -1,13 +1,15 @@
-"""学習済みモデルをスマホアプリ用に書き出す（Android: LiteRT/TFLite、iPhone: CoreML）。
+"""学習済みモデルをスマホアプリ用に書き出す（Android: LiteRT/TFLite、iPhone: CoreML、Web 版: ONNX）。
 
 本体の .venv ではなく、書き出し専用の環境で実行する
 （書き出しツールが opencv-python-headless を入れて cv2.imshow を壊すため）。
   .venv-export : LiteRT 用（PyTorch 2.14）
   .venv-coreml : CoreML 用（coremltools 9.0 が PyTorch 2.14 に未対応のため PyTorch 2.7）
+  .venv-onnx   : Web 版の ONNX 用（uv pip install ultralytics onnx onnxslim onnxruntime）
 
 使い方:
   .venv-export/bin/python export_mobile.py --formats tflite   # Android 用 → mobile_models/ と app/assets/models/
   .venv-coreml/bin/python export_mobile.py --formats coreml   # iPhone 用
+  .venv-onnx/bin/python export_mobile.py --formats onnx        # Web 版用 → mobile_models/ と web/models/
   .venv-export/bin/python export_mobile.py --formats tflite --tflite-quantize fp32 --app-assets ""   # 精度比較用
 
 精度の確認（書き出したモデルを PC で評価。tflite は PC でも動く。CoreML は macOS のみ）:
@@ -55,10 +57,22 @@ def export_coreml(model_path, out_dir, imgsz, quantize):
     return zpath
 
 
+def export_onnx(model_path, out_dir, imgsz):
+    from ultralytics import YOLO
+    # 生の出力 (1, 5, 8400) を書き出し、NMS はブラウザ側（web/detector.js）で行う。
+    # FP32 のまま（WebGPU が使えず WASM で動く端末でも同じモデルで動かすため）
+    out = Path(YOLO(model_path).export(format="onnx", imgsz=imgsz, opset=17, simplify=True,
+                                       dynamic=False, nms=False, batch=1))
+    dst = out_dir / "queen.onnx"
+    shutil.copy2(out, dst)
+    print(f"[書き出し] Web 版用: {dst} ({dst.stat().st_size / 1e6:.1f} MB)")
+    return dst
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", default=str(ROOT / "models/queen.pt"))
-    ap.add_argument("--formats", nargs="+", default=["tflite", "coreml"], choices=["tflite", "coreml"])
+    ap.add_argument("--formats", nargs="+", default=["tflite", "coreml"], choices=["tflite", "coreml", "onnx"])
     ap.add_argument("--imgsz", type=int, default=640, help="学習時と同じ 640")
     ap.add_argument("--tflite-quantize", default="w8a32", choices=["w8a32", "fp16", "fp32"],
                     help="w8a32 = 重みだけ int8（公式と同じ。GPU で動き、校正データ不要）")
@@ -67,6 +81,8 @@ def main():
     ap.add_argument("--out", default=str(ROOT / "mobile_models"))
     ap.add_argument("--app-assets", default=str(ROOT / "app/assets/models"),
                     help="書き出したモデルのコピー先（空文字でコピーしない）")
+    ap.add_argument("--web-assets", default=str(ROOT / "web/models"),
+                    help="ONNX のコピー先（空文字でコピーしない）")
     args = ap.parse_args()
 
     out_dir = Path(args.out)
@@ -82,6 +98,14 @@ def main():
         made.append(export_tflite(src, out_dir, args.imgsz, args.tflite_quantize))
     if "coreml" in args.formats:
         made.append(export_coreml(src, out_dir, args.imgsz, args.coreml_quantize or None))
+
+    if "onnx" in args.formats:
+        onnx_path = export_onnx(src, out_dir, args.imgsz)
+        if args.web_assets:
+            dst = Path(args.web_assets)
+            dst.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(onnx_path, dst / onnx_path.name)
+            print(f"[コピー] {dst / onnx_path.name}")
 
     if args.app_assets:
         dst = Path(args.app_assets)
