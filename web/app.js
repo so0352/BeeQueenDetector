@@ -74,17 +74,25 @@ async function registerSW() {
 async function fetchModel(onProgress) {
   const res = await fetch(MODEL_URL);
   if (!res.ok) throw new Error(`モデルを取得できません（${res.status}）`);
+  // GitHub Pages は gzip で送るので、Content-Length は圧縮後の大きさ（届く量より小さい）。
+  // 進み具合の目安にだけ使い、受け取ったものは貯めてから最後につなげる
   const total = Number(res.headers.get('content-length')) || 0;
   if (!res.body || !total) return new Uint8Array(await res.arrayBuffer());
-  const buf = new Uint8Array(total);
+  const chunks = [];
   const reader = res.body.getReader();
   let got = 0;
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
-    buf.set(value, got);
+    chunks.push(value);
     got += value.length;
-    onProgress(got / total);
+    onProgress(Math.min(got / total, 0.99));
+  }
+  const buf = new Uint8Array(got);
+  let off = 0;
+  for (const c of chunks) {
+    buf.set(c, off);
+    off += c.length;
   }
   return buf;
 }
