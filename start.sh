@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# findBeeQueen をワンコマンドで起動する。
+# BeeQueenDetector をワンコマンドで起動する。
 #   スマホの配信アプリ（Android: IP Webcam / iPhone・Android: DroidCam）を LAN から自動で探し、
 #   見つかったら女王蜂検出を始める。見つかるまで 5 秒ごとに探し続ける。
 #

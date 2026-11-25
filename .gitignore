@@ -24,9 +24,6 @@ mobile_models/
 *.pt
 !models/queen.pt
 
-# 元のアーカイブと展開用の作業フォルダ
-findBeeQueen.zip
-_extract/
 
 # Xcode のユーザー別設定
 xcuserdata/

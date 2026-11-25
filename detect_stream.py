@@ -130,7 +130,7 @@ def main():
     web = MJPEGServer(args.web) if args.web else None
     show = not args.no_show
     if show:
-        cv2.namedWindow("findBeeQueen", cv2.WINDOW_NORMAL)
+        cv2.namedWindow("BeeQueenDetector", cv2.WINDOW_NORMAL)
     snap_dir = Path(args.snap_dir)
     snap_dir.mkdir(parents=True, exist_ok=True)
     writer = None
@@ -193,7 +193,7 @@ def main():
             if web:
                 web.update(disp)
             if show:
-                cv2.imshow("findBeeQueen", disp)
+                cv2.imshow("BeeQueenDetector", disp)
                 k = cv2.waitKey(1) & 0xFF
                 if k in (ord("q"), 27):
                     break

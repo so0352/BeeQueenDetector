@@ -143,7 +143,7 @@ class MJPEGServer:
 
             def do_GET(self):
                 if self.path == "/":
-                    body = (b"<html><head><meta charset='utf-8'><title>findBeeQueen</title></head>"
+                    body = (b"<html><head><meta charset='utf-8'><title>BeeQueenDetector</title></head>"
                             b"<body style='margin:0;background:#111'>"
                             b"<img src='" + stream_path.encode() + b"' style='width:100%;height:100vh;object-fit:contain'></body></html>")
                     self.send_response(200)

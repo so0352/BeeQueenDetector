@@ -1,4 +1,4 @@
-# findBeeQueen — 女王蜂リアルタイム検出
+# BeeQueenDetector — 女王蜂リアルタイム検出
 
 スマホのカメラ映像を PC（Mac の Apple Silicon、または WSL2 + NVIDIA GPU）で解析し、西洋ミツバチの巣板から**女王蜂を見つけて枠で示す**アプリです。
 
@@ -32,7 +32,7 @@
 ## 1. 環境構築
 
 ```bash
-cd ~/work/findBeeQueen
+cd ~/work/BeeQueenDetector
 uv venv .venv --python 3.12          # または python3 -m venv .venv
 source .venv/bin/activate
 uv pip install -r requirements.txt   # または pip install -r requirements.txt
@@ -125,13 +125,13 @@ YOLO26s は mAP では僅差で上だが、画像単位の検出率と動画で 
 スマホでアプリの配信を開始してから:
 
 ```bash
-~/work/findBeeQueen/start.sh                 # スマホを LAN から自動で探して起動
-~/work/findBeeQueen/start.sh 192.168.0.23    # IP を指定（アプリの種類は自動判定）
-~/work/findBeeQueen/start.sh --tiles 2       # detect_stream.py のオプションもそのまま渡せる
+~/work/BeeQueenDetector/start.sh                 # スマホを LAN から自動で探して起動
+~/work/BeeQueenDetector/start.sh 192.168.0.23    # IP を指定（アプリの種類は自動判定）
+~/work/BeeQueenDetector/start.sh --tiles 2       # detect_stream.py のオプションもそのまま渡せる
 ```
 
 - Windows からは `start_windows.bat` をダブルクリック（デスクトップにコピーして使えます。
-  エクスプローラーで `\\wsl$\Ubuntu-24.04\home\<ユーザー名>\work\findBeeQueen` を開くと見つかります）。
+  エクスプローラーで `\\wsl$\Ubuntu-24.04\home\<ユーザー名>\work\BeeQueenDetector` を開くと見つかります）。
 - IP Webcam（8080）と DroidCam（4747）を自動で判別します。見つかるまで 5 秒ごとに探し続けます。
 - 前回の IP を `.phone` に覚えるので、2 回目以降はすぐつながります。
 - 検出画面のウィンドウに加え、ブラウザでも `http://localhost:8090/` で見られます（`WEB_PORT=0 ./start.sh` で無効）。

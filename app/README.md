@@ -28,7 +28,7 @@ PC もネットも不要なので、巣箱の前が圏外でも動きます。
 
 ```bash
 source ~/opt/env.sh
-cd ~/work/findBeeQueen/app
+cd ~/work/BeeQueenDetector/app
 flutter build apk --release --target-platform android-arm64
 # → build/app/outputs/flutter-apk/app-release.apk（約 38 MB）
 ```
@@ -42,7 +42,7 @@ flutter build apk --release --target-platform android-arm64
    スマホのブラウザで `http://100.69.53.14:8000/app-release.apk` を開いてダウンロード → 開く
    （「提供元不明のアプリ」の許可を求められたら許可）。終わったら Ctrl+C で止める。
 2. **USB / Google ドライブ**: Windows のエクスプローラーで
-   `\\wsl$\Ubuntu-24.04\home\<ユーザー名>\work\findBeeQueen\app\build\app\outputs\flutter-apk\` から APK をスマホへコピー。
+   `\\wsl$\Ubuntu-24.04\home\<ユーザー名>\work\BeeQueenDetector\app\build\app\outputs\flutter-apk\` から APK をスマホへコピー。
 3. **ワイヤレスデバッグ（adb）**: スマホの「開発者向けオプション → ワイヤレス デバッグ → ペア設定コード」で
    ```bash
    adb pair <スマホのIP>:<ペア用ポート>   # 6 桁のコードを入力
@@ -114,7 +114,7 @@ Apple Developer Program（年 99 ドル）への登録が必要です。受け�
 再学習して `models/queen.pt` を差し替えたら、書き出してからアプリをビルドし直します。
 
 ```bash
-cd ~/work/findBeeQueen
+cd ~/work/BeeQueenDetector
 .venv-export/bin/python export_mobile.py --formats tflite   # Android 用（LiteRT, w8a32）→ app/assets/models/
 .venv-coreml/bin/python export_mobile.py --formats coreml   # iPhone 用（CoreML, FP16）→ app/assets/models/
 .venv-export/bin/python eval_images.py --models models/queen.pt mobile_models/queen.tflite   # 書き出し後の精度確認

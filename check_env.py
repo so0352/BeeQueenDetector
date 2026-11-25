@@ -53,7 +53,7 @@ def main():
         try:
             import numpy as np
             img = np.zeros((240, 480, 3), np.uint8)
-            cv2.putText(img, "findBeeQueen: imshow OK", (20, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
+            cv2.putText(img, "BeeQueenDetector: imshow OK", (20, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
             cv2.imshow("check_env", img)
             cv2.waitKey(2000)
             cv2.destroyAllWindows()
