@@ -1,6 +1,7 @@
 # 使用データの出典
 
 学習に使った Roboflow Universe のデータセット（`download_datasets.py` が自動生成）。
+※ 採用モデル `models/queen.pt`（v3）は queenbee detector を除いた残りで学習しています。
 
 | 名前 | 出典 | バージョン | ライセンス |
 |---|---|---|---|

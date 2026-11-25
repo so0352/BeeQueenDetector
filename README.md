@@ -29,6 +29,7 @@
 | `app/` | スマホ単体アプリ（Flutter、Android / iPhone）。詳しくは `app/README.md` |
 | `web/` | Web 版（ブラウザで動き、開いた端末の GPU で推論）。詳しくは `web/README.md` |
 | `CREDITS.md` | 使用データの出典・ライセンス（自動生成） |
+| `LICENSE` / `PRIVACY.md` | ライセンス（AGPL-3.0）・プライバシーポリシー |
 
 ## 1. 環境構築
 
@@ -210,3 +211,12 @@ cd web && python3 -m http.server 8765                   # http://localhost:8765/
 
 - 書き出し後の精度（test 880 枚、conf 0.25）: `.onnx` 検出 91.7% / 誤検出 1.9%（`.pt` と同じ）。
 - Apple Silicon の Mac の Chrome（WebGPU）で 1 回約 20 ms。iPhone での速度は実機で要確認。
+
+## ライセンス
+
+Copyright (c) 2026 so0352
+
+このリポジトリ（コード・学習済みモデル）は [AGPL-3.0](LICENSE) で公開しています（Ultralytics YOLO / `ultralytics_yolo` が AGPL-3.0 のため）。
+
+- 学習データ: Roboflow Universe の各データセット（CC BY 4.0）。出典は [CREDITS.md](CREDITS.md)。
+- Web 版に同梱の ONNX Runtime Web: MIT License（[web/vendor/ort/LICENSE](web/vendor/ort/LICENSE)）。

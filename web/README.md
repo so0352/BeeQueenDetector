@@ -79,7 +79,7 @@ uv pip install --python .venv-onnx/bin/python ultralytics onnx onnxslim onnxrunt
 
 ## 未確認（実機で確かめること）
 
-- **iPhone の Safari での速度**（iOS 26 以降で WebGPU）。WEB_PLAN.md の基準では 8 fps 以上なら YOLO11s のままでよい。
+- **iPhone の Safari での速度**（iOS 26 以降で WebGPU）。目安は 8 fps 以上（下回るなら YOLO11n で再学習するか、ネイティブアプリの TestFlight 配布を検討）。
   画面上部に fps と 1 回の推論時間（ms）が出るので、その数字を記録する。設定の「推論に使うもの」で GPU / CPU を比べられる。
 - iPhone でのカメラのズーム・ライト（使えない場合、ズームは映像の切り出しに切り替わり、ライトのボタンは出ない）。
 - ホーム画面から起動したときのカメラ・全画面表示、マナーモード時の音。
